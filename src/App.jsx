@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Layout from './components/Layout';
 import JsonEditor from './components/JsonEditor';
+import Controls from './components/Controls';
 
 const DEFAULT_JSON = `{
   "name": "JSON Formatter",
@@ -15,6 +16,8 @@ const DEFAULT_JSON = `{
 
 function App() {
     const [input, setInput] = useState(DEFAULT_JSON);
+    const [indent, setIndent] = useState(2);
+
     const { output, error } = React.useMemo(() => {
         if (!input.trim()) {
             return { output: '', error: null };
@@ -22,15 +25,15 @@ function App() {
 
         try {
             const parsed = JSON.parse(input);
-            const formatted = JSON.stringify(parsed, null, 2);
+            const formatted = JSON.stringify(parsed, null, indent);
             return { output: formatted, error: null };
         } catch (err) {
             return { output: '', error: err.message };
         }
-    }, [input]);
+    }, [input, indent]);
 
     return (
-        <Layout>
+        <Layout controls={<Controls indent={indent} onIndentChange={setIndent} />}>
             <div style={{ display: 'flex', width: '100%', height: '100%' }}>
                 <div style={{ flex: 1, height: '100%' }}>
                     <JsonEditor

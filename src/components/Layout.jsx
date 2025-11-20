@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, controls }) => {
   return (
     <div style={{
       display: 'flex',
@@ -18,11 +18,16 @@ const Layout = ({ children }) => {
         justifyContent: 'space-between',
         backgroundColor: 'var(--bg-secondary)'
       }}>
-        <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600, color: 'var(--accent-color)' }}>
-          JSON Formatter
-        </h1>
-        <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          Simple. Fast. Dark.
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600, color: 'var(--accent-color)' }}>
+            JSON Formatter
+          </h1>
+          <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+            Simple. Fast. Dark.
+          </div>
+        </div>
+        <div>
+          {controls}
         </div>
       </header>
       <main style={{
