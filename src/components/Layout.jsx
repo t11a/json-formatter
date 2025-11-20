@@ -23,7 +23,7 @@ const Layout = ({ children, controls }) => {
             JSON Formatter
           </h1>
           <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-            Simple. Fast. Dark.
+            Simple. Fast. Secure.
           </div>
         </div>
         <div>

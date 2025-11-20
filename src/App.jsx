@@ -5,7 +5,7 @@ import Controls from './components/Controls';
 
 const DEFAULT_JSON = `{
   "name": "JSON Formatter",
-  "description": "Simple. Fast. Dark.",
+  "description": "Simple. Fast. Secure.",
   "features": [
     "Real-time Formatting",
     "Syntax Highlighting",
