@@ -1,8 +1,20 @@
-import React, { useState } from 'react';
-import { Copy, Check, FileJson } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Copy, Check, FileJson, Settings, ChevronDown } from 'lucide-react';
 
 const Controls = ({ indent, onIndentChange, output }) => {
     const [copied, setCopied] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setIsMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleCopy = async () => {
         try {
@@ -14,6 +26,12 @@ const Controls = ({ indent, onIndentChange, output }) => {
         }
     };
 
+    const indentOptions = [
+        { value: 2, label: '2 Spaces' },
+        { value: 4, label: '4 Spaces' },
+        { value: 8, label: '8 Spaces' },
+    ];
+
     return (
         <div style={{
             display: 'flex',
@@ -22,25 +40,68 @@ const Controls = ({ indent, onIndentChange, output }) => {
             color: 'var(--text-secondary)',
             fontSize: '0.875rem'
         }}>
-            <span>Indent:</span>
-            <select
-                value={indent}
-                onChange={(e) => onIndentChange(Number(e.target.value))}
-                style={{
-                    backgroundColor: 'var(--bg-primary)',
-                    color: 'var(--text-primary)',
-                    border: '1px solid var(--border-color)',
-                    padding: '0.25rem 0.5rem',
-                    borderRadius: '4px',
-                    outline: 'none',
-                    cursor: 'pointer'
-                }}
-            >
-                <option value={0}>Minified</option>
-                <option value={2}>2 Spaces</option>
-                <option value={4}>4 Spaces</option>
-                <option value={8}>8 Spaces</option>
-            </select>
+            <div style={{ position: 'relative' }} ref={menuRef}>
+                <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        backgroundColor: 'transparent',
+                        color: 'var(--text-secondary)',
+                        border: '1px solid var(--border-color)',
+                        padding: '0.25rem 0.75rem',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem',
+                        transition: 'all 0.2s'
+                    }}
+                >
+                    <Settings size={16} />
+                    <span>Indent: {indent === 0 ? 'Minified' : `${indent} Spaces`}</span>
+                    <ChevronDown size={14} />
+                </button>
+
+                {isMenuOpen && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '100%',
+                        right: 0,
+                        marginTop: '0.5rem',
+                        backgroundColor: 'var(--bg-secondary)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '4px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        zIndex: 10,
+                        minWidth: '140px',
+                        overflow: 'hidden'
+                    }}>
+                        {indentOptions.map((option) => (
+                            <button
+                                key={option.value}
+                                onClick={() => {
+                                    onIndentChange(option.value);
+                                    setIsMenuOpen(false);
+                                }}
+                                style={{
+                                    display: 'block',
+                                    width: '100%',
+                                    textAlign: 'left',
+                                    padding: '0.5rem 1rem',
+                                    backgroundColor: indent === option.value ? 'var(--bg-primary)' : 'transparent',
+                                    color: indent === option.value ? 'var(--accent-color)' : 'var(--text-primary)',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '0.875rem',
+                                    transition: 'background-color 0.2s'
+                                }}
+                            >
+                                {option.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
 
             <button
                 onClick={() => onIndentChange(0)}
