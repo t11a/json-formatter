@@ -2,8 +2,19 @@ import React, { useState } from 'react';
 import Layout from './components/Layout';
 import JsonEditor from './components/JsonEditor';
 
+const DEFAULT_JSON = `{
+  "name": "JSON Formatter",
+  "description": "Simple. Fast. Dark.",
+  "features": [
+    "Real-time Formatting",
+    "Syntax Highlighting",
+    "Error Detection"
+  ],
+  "active": true
+}`;
+
 function App() {
-    const [input, setInput] = useState('');
+    const [input, setInput] = useState(DEFAULT_JSON);
     const { output, error } = React.useMemo(() => {
         if (!input.trim()) {
             return { output: '', error: null };
