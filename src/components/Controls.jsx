@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, FileJson } from 'lucide-react';
 
 const Controls = ({ indent, onIndentChange, output }) => {
     const [copied, setCopied] = useState(false);
@@ -36,10 +36,32 @@ const Controls = ({ indent, onIndentChange, output }) => {
                     cursor: 'pointer'
                 }}
             >
+                <option value={0}>Minified</option>
                 <option value={2}>2 Spaces</option>
                 <option value={4}>4 Spaces</option>
                 <option value={8}>8 Spaces</option>
             </select>
+
+            <button
+                onClick={() => onIndentChange(0)}
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    backgroundColor: indent === 0 ? 'var(--accent-color)' : 'transparent',
+                    color: indent === 0 ? '#fff' : 'var(--text-secondary)',
+                    border: indent === 0 ? 'none' : '1px solid var(--border-color)',
+                    padding: '0.25rem 0.75rem',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    transition: 'all 0.2s'
+                }}
+                title="Minify JSON"
+            >
+                <FileJson size={16} />
+                Minify
+            </button>
 
             <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--border-color)' }} />
 
