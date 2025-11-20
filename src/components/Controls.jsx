@@ -1,6 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Copy, Check } from 'lucide-react';
 
-const Controls = ({ indent, onIndentChange }) => {
+const Controls = ({ indent, onIndentChange, output }) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(output);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+        }
+    };
+
     return (
         <div style={{
             display: 'flex',
@@ -27,6 +40,31 @@ const Controls = ({ indent, onIndentChange }) => {
                 <option value={4}>4 Spaces</option>
                 <option value={8}>8 Spaces</option>
             </select>
+
+            <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--border-color)' }} />
+
+            <button
+                onClick={handleCopy}
+                disabled={!output}
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    backgroundColor: copied ? 'var(--success-color)' : 'var(--accent-color)',
+                    color: copied ? '#fff' : '#fff',
+                    border: 'none',
+                    padding: '0.375rem 0.75rem',
+                    borderRadius: '4px',
+                    cursor: output ? 'pointer' : 'not-allowed',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    opacity: output ? 1 : 0.5,
+                    transition: 'all 0.2s'
+                }}
+            >
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+                {copied ? 'Copied!' : 'Copy'}
+            </button>
         </div>
     );
 };

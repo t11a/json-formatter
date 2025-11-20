@@ -33,7 +33,7 @@ function App() {
     }, [input, indent]);
 
     return (
-        <Layout controls={<Controls indent={indent} onIndentChange={setIndent} />}>
+        <Layout controls={<Controls indent={indent} onIndentChange={setIndent} output={output} />}>
             <div style={{ display: 'flex', width: '100%', height: '100%' }}>
                 <div style={{ flex: 1, height: '100%' }}>
                     <JsonEditor
