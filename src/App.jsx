@@ -20,17 +20,31 @@ function App() {
   const [leftWidth, setLeftWidth] = useState(50); // Percentage
   const [isDragging, setIsDragging] = useState(false);
 
-  const { output, error } = React.useMemo(() => {
+  const { output, error, errorLine } = React.useMemo(() => {
     if (!input.trim()) {
-      return { output: '', error: null };
+      return { output: '', error: null, errorLine: null };
     }
 
     try {
       const parsed = JSON.parse(input);
       const formatted = JSON.stringify(parsed, null, indent);
-      return { output: formatted, error: null };
+      return { output: formatted, error: null, errorLine: null };
     } catch (err) {
-      return { output: '', error: err.message };
+      let line = null;
+      // Chrome/V8 often gives "at position X"
+      const match = err.message.match(/at position (\d+)/);
+      if (match) {
+        const position = parseInt(match[1], 10);
+        // Calculate line number by counting newlines up to position
+        line = input.substring(0, position).split('\n').length;
+      } else {
+        // Fallback: try to find "line X" if other browsers use that format
+        const lineMatch = err.message.match(/line (\d+)/);
+        if (lineMatch) {
+          line = parseInt(lineMatch[1], 10);
+        }
+      }
+      return { output: '', error: err.message, errorLine: line };
     }
   }, [input, indent]);
 
@@ -71,7 +85,7 @@ function App() {
     <Layout controls={<Controls indent={indent} onIndentChange={setIndent} output={output} />}>
       <div style={{ display: 'flex', width: '100%', height: '100%', cursor: isDragging ? 'col-resize' : 'default' }}>
         <div style={{ width: `${leftWidth}%`, height: '100%' }}>
-          <JsonEditor title="Input JSON" value={input} onChange={setInput} error={error} />
+          <JsonEditor title="Input JSON" value={input} onChange={setInput} error={error} errorLine={errorLine} />
         </div>
 
         {/* Resizer Handle */}
