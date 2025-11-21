@@ -15,45 +15,40 @@ const DEFAULT_JSON = `{
 }`;
 
 function App() {
-    const [input, setInput] = useState(DEFAULT_JSON);
-    const [indent, setIndent] = useState(2);
+  const [input, setInput] = useState(DEFAULT_JSON);
+  const [indent, setIndent] = useState(2);
 
-    const { output, error } = React.useMemo(() => {
-        if (!input.trim()) {
-            return { output: '', error: null };
-        }
+  const { output, error } = React.useMemo(() => {
+    if (!input.trim()) {
+      return { output: '', error: null };
+    }
 
-        try {
-            const parsed = JSON.parse(input);
-            const formatted = JSON.stringify(parsed, null, indent);
-            return { output: formatted, error: null };
-        } catch (err) {
-            return { output: '', error: err.message };
-        }
-    }, [input, indent]);
+    try {
+      const parsed = JSON.parse(input);
+      const formatted = JSON.stringify(parsed, null, indent);
+      return { output: formatted, error: null };
+    } catch (err) {
+      return { output: '', error: err.message };
+    }
+  }, [input, indent]);
 
-    return (
-        <Layout controls={<Controls indent={indent} onIndentChange={setIndent} output={output} />}>
-            <div style={{ display: 'flex', width: '100%', height: '100%' }}>
-                <div style={{ flex: 1, height: '100%' }}>
-                    <JsonEditor
-                        title="Input JSON"
-                        value={input}
-                        onChange={setInput}
-                        error={error}
-                    />
-                </div>
-                <div style={{ flex: 1, height: '100%' }}>
-                    <JsonEditor
-                        title="Formatted Output"
-                        value={output}
-                        onChange={() => { }} // Read only effectively
-                        readOnly={true}
-                    />
-                </div>
-            </div>
-        </Layout>
-    );
+  return (
+    <Layout controls={<Controls indent={indent} onIndentChange={setIndent} output={output} />}>
+      <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+        <div style={{ flex: 1, height: '100%' }}>
+          <JsonEditor title="Input JSON" value={input} onChange={setInput} error={error} />
+        </div>
+        <div style={{ flex: 1, height: '100%' }}>
+          <JsonEditor
+            title="Formatted Output"
+            value={output}
+            onChange={() => {}} // Read only effectively
+            readOnly={true}
+          />
+        </div>
+      </div>
+    </Layout>
+  );
 }
 
 export default App;

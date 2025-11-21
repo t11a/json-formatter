@@ -34,6 +34,7 @@ Follow these steps to run the project locally.
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/t11a/json-formatter.git
    cd json-formatter
