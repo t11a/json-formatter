@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Copy, Check, FileJson, Settings, ChevronDown } from 'lucide-react';
+import { Copy, Check, FileJson, Settings, ChevronDown, Download } from 'lucide-react';
 
 const Controls = ({ indent, onIndentChange, output }) => {
     const [copied, setCopied] = useState(false);
@@ -24,6 +24,19 @@ const Controls = ({ indent, onIndentChange, output }) => {
         } catch (err) {
             console.error('Failed to copy:', err);
         }
+    };
+
+    const handleDownload = () => {
+        if (!output) return;
+        const blob = new Blob([output], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'formatted.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     };
 
     const indentOptions = [
@@ -125,6 +138,29 @@ const Controls = ({ indent, onIndentChange, output }) => {
             </button>
 
             <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--border-color)' }} />
+
+            <button
+                onClick={handleDownload}
+                disabled={!output}
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    backgroundColor: 'transparent',
+                    color: 'var(--text-secondary)',
+                    border: '1px solid var(--border-color)',
+                    padding: '0.25rem 0.75rem',
+                    borderRadius: '4px',
+                    cursor: output ? 'pointer' : 'not-allowed',
+                    fontSize: '0.875rem',
+                    opacity: output ? 1 : 0.5,
+                    transition: 'all 0.2s'
+                }}
+                title="Download JSON"
+            >
+                <Download size={16} />
+                Download
+            </button>
 
             <button
                 onClick={handleCopy}
