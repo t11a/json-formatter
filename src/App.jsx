@@ -17,6 +17,8 @@ const DEFAULT_JSON = `{
 function App() {
   const [input, setInput] = useState(DEFAULT_JSON);
   const [indent, setIndent] = useState(2);
+  const [leftWidth, setLeftWidth] = useState(50); // Percentage
+  const [isDragging, setIsDragging] = useState(false);
 
   const { output, error } = React.useMemo(() => {
     if (!input.trim()) {
@@ -32,17 +34,65 @@ function App() {
     }
   }, [input, indent]);
 
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  React.useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+
+      const containerWidth = window.innerWidth;
+      const newLeftWidth = (e.clientX / containerWidth) * 100;
+
+      // Limit width between 20% and 80%
+      if (newLeftWidth >= 20 && newLeftWidth <= 80) {
+        setLeftWidth(newLeftWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
   return (
     <Layout controls={<Controls indent={indent} onIndentChange={setIndent} output={output} />}>
-      <div style={{ display: 'flex', width: '100%', height: '100%' }}>
-        <div style={{ flex: 1, height: '100%' }}>
+      <div style={{ display: 'flex', width: '100%', height: '100%', cursor: isDragging ? 'col-resize' : 'default' }}>
+        <div style={{ width: `${leftWidth}%`, height: '100%' }}>
           <JsonEditor title="Input JSON" value={input} onChange={setInput} error={error} />
         </div>
-        <div style={{ flex: 1, height: '100%' }}>
+
+        {/* Resizer Handle */}
+        <div
+          onMouseDown={handleMouseDown}
+          style={{
+            width: '4px',
+            backgroundColor: isDragging ? 'var(--accent-color)' : 'var(--border-color)',
+            cursor: 'col-resize',
+            height: '100%',
+            transition: 'background-color 0.2s',
+            zIndex: 10
+          }}
+          className="resizer"
+        />
+
+        <div style={{ width: `${100 - leftWidth}%`, height: '100%' }}>
           <JsonEditor
             title="Formatted Output"
             value={output}
-            onChange={() => {}} // Read only effectively
+            onChange={() => { }} // Read only effectively
             readOnly={true}
           />
         </div>
