@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Layout from './components/Layout';
 import JsonEditor from './components/JsonEditor';
+import JsonTreeView from './components/JsonTreeView';
 import Controls from './components/Controls';
 
 const DEFAULT_JSON = `{
@@ -19,16 +20,17 @@ function App() {
   const [indent, setIndent] = useState(2);
   const [leftWidth, setLeftWidth] = useState(50); // Percentage
   const [isDragging, setIsDragging] = useState(false);
+  const [viewMode, setViewMode] = useState('text'); // 'text' or 'tree'
 
-  const { output, error, errorLine } = React.useMemo(() => {
+  const { output, error, errorLine, parsedData } = React.useMemo(() => {
     if (!input.trim()) {
-      return { output: '', error: null, errorLine: null };
+      return { output: '', error: null, errorLine: null, parsedData: null };
     }
 
     try {
       const parsed = JSON.parse(input);
       const formatted = JSON.stringify(parsed, null, indent);
-      return { output: formatted, error: null, errorLine: null };
+      return { output: formatted, error: null, errorLine: null, parsedData: parsed };
     } catch (err) {
       let line = null;
       // Chrome/V8 often gives "at position X"
@@ -44,7 +46,7 @@ function App() {
           line = parseInt(lineMatch[1], 10);
         }
       }
-      return { output: '', error: err.message, errorLine: line };
+      return { output: '', error: err.message, errorLine: line, parsedData: null };
     }
   }, [input, indent]);
 
@@ -82,7 +84,17 @@ function App() {
   }, [isDragging]);
 
   return (
-    <Layout controls={<Controls indent={indent} onIndentChange={setIndent} output={output} />}>
+    <Layout
+      controls={
+        <Controls
+          indent={indent}
+          onIndentChange={setIndent}
+          output={output}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+        />
+      }
+    >
       <div style={{ display: 'flex', width: '100%', height: '100%', cursor: isDragging ? 'col-resize' : 'default' }}>
         <div style={{ width: `${leftWidth}%`, height: '100%' }}>
           <JsonEditor title="Input JSON" value={input} onChange={setInput} error={error} errorLine={errorLine} />
@@ -103,12 +115,16 @@ function App() {
         />
 
         <div style={{ width: `${100 - leftWidth}%`, height: '100%' }}>
-          <JsonEditor
-            title="Formatted Output"
-            value={output}
-            onChange={() => { }} // Read only effectively
-            readOnly={true}
-          />
+          {viewMode === 'text' ? (
+            <JsonEditor
+              title="Formatted Output"
+              value={output}
+              onChange={() => { }} // Read only effectively
+              readOnly={true}
+            />
+          ) : (
+            <JsonTreeView title="Tree View" data={parsedData} indentWidth={indent} />
+          )}
         </div>
       </div>
     </Layout>
